@@ -1,0 +1,243 @@
+.page {
+  padding: 60px 0 100px;
+  display: flex;
+  justify-content: center;
+}
+
+.formCard {
+  max-width: 800px;
+  width: 100%;
+  padding: 40px;
+  background: var(--void-800);
+  border: 1px solid var(--glass-border);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.kicker {
+  color: var(--blood-red);
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.titleArea h1 {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  margin-bottom: 8px;
+}
+
+.subtext {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.statusPill {
+  background: var(--void-700);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--text-dim);
+  border: 1px solid var(--glass-border);
+}
+
+.progressContainer {
+  width: 100%;
+  height: 6px;
+  background: var(--void-900);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blood-red), var(--life-green));
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stepTitle {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stepTitle span {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--void-700);
+  font-family: var(--font-space-grotesk);
+}
+
+.stepTitle h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputWrap svg {
+  position: absolute;
+  left: 12px;
+  color: var(--text-dim);
+  pointer-events: none;
+}
+
+.inputWrap input, .inputWrap select {
+  padding-left: 40px !important;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 20px;
+  padding-top: 32px;
+  border-top: 1px solid var(--glass-border);
+}
+
+.confirmation {
+  text-align: center;
+  padding: 40px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.confIcon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(16, 229, 108, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.refId {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: var(--void-900);
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 0.9rem;
+  color: var(--life-green);
+}
+
+.alert {
+  padding: 12px 16px;
+  background: color-mix(in oklab, var(--blood-red) 10%, transparent);
+  border: 1px solid color-mix(in oklab, var(--blood-red) 26%, transparent);
+  color: var(--blood-red);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.alertLink {
+  color: var(--blood-red);
+  text-decoration: underline;
+  font-weight: 800;
+}
+
+@media (max-width: 700px) {
+  .fieldGrid {
+    grid-template-columns: 1fr;
+  }
+  .header {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 900px) {
+  .formCard {
+    padding: 22px;
+    gap: 22px;
+  }
+
+  .footer {
+    flex-wrap: wrap;
+  }
+
+  .footer button {
+    flex: 1;
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 540px) {
+  .page {
+    padding: 22px 0 60px;
+  }
+
+  .formCard {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .stepTitle {
+    gap: 10px;
+  }
+
+  .stepTitle span {
+    font-size: 2rem;
+  }
+
+  .stepTitle h2 {
+    font-size: 1.1rem;
+  }
+
+  .footer {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 8px;
+    padding-top: 18px;
+  }
+
+  .footer button {
+    width: 100%;
+  }
+
+  .confirmation {
+    padding: 18px 0;
+  }
+}

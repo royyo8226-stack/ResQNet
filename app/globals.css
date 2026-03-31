@@ -1,17 +1,66 @@
+@import "leaflet/dist/leaflet.css";
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-space-grotesk: var(--font-display);
+  --brand-red: #16a34a;
+  --brand-green: #06b6d4;
+  --ink-900: #0b1220;
+  --ink-700: #334155;
+  --ink-500: #64748b;
+  --surface: #ffffff;
+  --surface-soft: #f3fffb;
+  --line: #cce8e2;
+  --page-bg-a: rgba(34, 197, 94, 0.18);
+  --page-bg-b: rgba(6, 182, 212, 0.16);
+  --page-bg-c: #f7fffd;
+  --site-header-bg: rgba(255, 255, 255, 0.72);
+  --shadow-soft: 0 14px 38px rgba(11, 18, 32, 0.1);
+  --shadow-float: 0 20px 44px rgba(11, 18, 32, 0.13);
+
+  --void-900: #eefcf8;
+  --void-800: #ffffff;
+  --void-700: #f3fffc;
+  --void-600: #e5fbf6;
+  --glass-border: #c7e5df;
+  --text-primary: #0b1220;
+  --text-muted: #5f7088;
+  --text-dim: #0f766e;
+  --blood-red: #22c55e;
+  --blood-red-glow: rgba(34, 197, 94, 0.4);
+  --life-green: #06b6d4;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --ink-900: #edf2ff;
+  --ink-700: #c3d0e7;
+  --ink-500: #8fa4c1;
+  --surface: #071625;
+  --surface-soft: #0b1f32;
+  --line: #275267;
+  --page-bg-a: rgba(74, 222, 128, 0.2);
+  --page-bg-b: rgba(34, 211, 238, 0.2);
+  --page-bg-c: #020b16;
+  --site-header-bg: rgba(4, 13, 23, 0.66);
+  --shadow-soft: 0 14px 34px rgba(2, 6, 23, 0.48);
+  --shadow-float: 0 22px 52px rgba(2, 6, 23, 0.58);
+
+  --void-900: #041224;
+  --void-800: #071625;
+  --void-700: #0f2338;
+  --void-600: #15304b;
+  --glass-border: #245167;
+  --text-primary: #e8eefb;
+  --text-muted: #9db0c8;
+  --text-dim: #99f6e4;
+  --blood-red: #4ade80;
+  --blood-red-glow: rgba(74, 222, 128, 0.45);
+  --life-green: #22d3ee;
 }
 
-html {
-  height: 100%;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html,
@@ -21,20 +70,23 @@ body {
 }
 
 body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  color: var(--ink-900);
+  font-family: var(--font-body), "Segoe UI", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  background:
+    radial-gradient(1100px circle at 0% -10%, var(--page-bg-a), transparent 44%),
+    radial-gradient(900px circle at 100% 0%, var(--page-bg-b), transparent 42%),
+    linear-gradient(180deg, var(--page-bg-c) 0%, var(--surface) 56%, var(--surface-soft) 100%);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+h1,
+h2,
+h3,
+h4,
+.brand {
+  font-family: var(--font-display), "Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif;
 }
 
 a {
@@ -42,8 +94,467 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--blood-red) 34%, transparent);
+  outline-offset: 2px;
+}
+
+.container {
+  width: min(1140px, 92vw);
+  margin: 0 auto;
+}
+
+.siteHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 12px 0 6px;
+}
+
+.navWrap {
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 14px;
+  border-radius: 24px;
+  border: 1px solid color-mix(in oklab, var(--glass-border) 85%, #ffffff 15%);
+  background: var(--site-header-bg);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-float);
+}
+
+.brand {
+  font-size: 1.18rem;
+  letter-spacing: 0.3px;
+  font-weight: 760;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brandDot {
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--brand-red), var(--life-green));
+  box-shadow: 0 0 0 6px color-mix(in oklab, var(--blood-red) 18%, transparent);
+}
+
+.mainNav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.navRight {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.userChip {
+  border: 1px solid color-mix(in oklab, var(--line) 88%, #fff 12%);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--surface) 85%, var(--void-700) 15%);
+  padding: 9px 11px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink-700);
+  max-width: 190px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navSignout {
+  border: 1px solid color-mix(in oklab, var(--line) 88%, #fff 12%);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--surface) 90%, var(--void-700) 10%);
+  color: var(--ink-700);
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: transform 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+
+.navSignout:hover {
+  color: var(--ink-900);
+  transform: translateY(-1px);
+  border-color: color-mix(in oklab, var(--blood-red) 44%, var(--line) 56%);
+}
+
+.mainNav a {
+  padding: 9px 13px;
+  border-radius: 12px;
+  color: var(--ink-700);
+  font-weight: 650;
+  font-size: 0.9rem;
+  transition: transform 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+
+.mainNav a:hover {
+  color: var(--ink-900);
+  transform: translateY(-1px);
+  background: color-mix(in oklab, var(--surface) 78%, var(--void-700) 22%);
+}
+
+.themeToggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in oklab, var(--line) 88%, #fff 12%);
+  background: color-mix(in oklab, var(--surface) 90%, var(--void-700) 10%);
+  color: var(--ink-900);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.themeToggle:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in oklab, var(--blood-red) 30%, var(--line) 70%);
+}
+
+.appMain {
+  flex: 1;
+  padding-top: 8px;
+}
+
+.siteFooter {
+  margin-top: 24px;
+  padding: 34px 0 24px;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--surface-soft) 92%, #fff 8%), color-mix(in oklab, var(--void-800) 88%, var(--surface) 12%));
+}
+
+.footerTop {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 24px;
+  padding: 22px;
+  border-radius: 24px;
+  border: 1px solid color-mix(in oklab, var(--line) 84%, #fff 16%);
+  background: color-mix(in oklab, var(--surface) 88%, var(--void-700) 12%);
+  box-shadow: var(--shadow-soft);
+}
+
+.footerBrandCol {
+  display: grid;
+  gap: 10px;
+}
+
+.footerBrand {
+  color: var(--ink-900);
+  font-weight: 800;
+  font-size: 1.18rem;
+}
+
+.footerLead {
+  color: var(--ink-700);
+  max-width: 48ch;
+  line-height: 1.55;
+}
+
+.footerChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.footerChips span {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--line) 80%, #fff 20%);
+  background: color-mix(in oklab, var(--surface) 90%, var(--void-700) 10%);
+  color: var(--ink-700);
+  font-size: 0.79rem;
+  font-weight: 700;
+  padding: 6px 10px;
+}
+
+.footerCols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.footerCol {
+  display: grid;
+  gap: 8px;
+}
+
+.footerCol h3 {
+  color: var(--ink-900);
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+  letter-spacing: -0.01em;
+}
+
+.footerCol a {
+  width: fit-content;
+  color: var(--ink-700);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 6px 8px;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.footerCol a:hover {
+  color: var(--ink-900);
+  background: color-mix(in oklab, var(--surface) 84%, var(--void-700) 16%);
+}
+
+.footerBottom {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--ink-500);
+  font-size: 0.83rem;
+}
+
+.card {
+  background:
+    linear-gradient(165deg, color-mix(in oklab, var(--surface) 94%, #fff 6%), color-mix(in oklab, var(--surface-soft) 88%, #fff 12%));
+  border-radius: 22px;
+  border: 1px solid color-mix(in oklab, var(--line) 88%, #fff 12%);
+  box-shadow: var(--shadow-soft);
+}
+
+.btn {
+  border: 1px solid transparent;
+  border-radius: 14px;
+  padding: 12px 16px;
+  min-height: 46px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+}
+
+.btnPrimary {
+  background: linear-gradient(135deg, var(--blood-red), var(--life-green));
+  color: white;
+  box-shadow: 0 10px 22px color-mix(in oklab, var(--blood-red) 34%, transparent);
+}
+
+.btnPrimary:hover {
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+}
+
+.btnGhost {
+  background: color-mix(in oklab, var(--surface) 88%, var(--void-700) 12%);
+  color: var(--ink-900);
+  border-color: color-mix(in oklab, var(--line) 88%, #fff 12%);
+}
+
+.btnSuccess {
+  background: linear-gradient(135deg, #0f9f74, #2dd4bf);
+  color: #fff;
+  box-shadow: 0 10px 22px color-mix(in oklab, #0f9f74 30%, transparent);
+}
+
+.btnGhost:hover,
+.btnSuccess:hover {
+  transform: translateY(-1px);
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  border: 1px solid color-mix(in oklab, var(--line) 90%, #fff 10%);
+  border-radius: 12px;
+  padding: 12px 13px;
+  font-size: 0.94rem;
+  font-family: inherit;
+  background: color-mix(in oklab, var(--surface) 90%, var(--void-700) 10%);
+  color: var(--ink-900);
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: 2px solid color-mix(in oklab, var(--blood-red) 26%, transparent);
+  border-color: color-mix(in oklab, var(--blood-red) 68%, var(--line) 32%);
+}
+
+.label {
+  display: grid;
+  gap: 8px;
+  color: var(--ink-700);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.pillVerified {
+  background: color-mix(in oklab, var(--life-green) 18%, transparent);
+  color: var(--life-green);
+  border: 1px solid color-mix(in oklab, var(--life-green) 38%, transparent);
+}
+
+.pillPending {
+  background: rgba(245, 158, 11, 0.14);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.pillRejected {
+  background: rgba(239, 68, 68, 0.16);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.pillActive {
+  background: color-mix(in oklab, var(--life-green) 18%, transparent);
+  color: var(--life-green);
+  border: 1px solid color-mix(in oklab, var(--life-green) 38%, transparent);
+}
+
+.pillInactive {
+  background: color-mix(in oklab, var(--void-700) 74%, transparent);
+  color: var(--text-muted);
+  border: 1px solid color-mix(in oklab, var(--line) 80%, transparent);
+}
+
+.fadeIn {
+  animation: fadeIn 0.45s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 860px) {
+  .mainNav {
+    width: 100%;
+    order: 3;
+    padding-top: 2px;
+  }
+
+  .mainNav a {
+    font-size: 0.84rem;
+    padding: 8px 10px;
+  }
+
+  .navRight {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .container {
+    width: min(1140px, 94vw);
+  }
+
+  .siteHeader {
+    padding-top: 10px;
+  }
+
+  .navWrap {
+    min-height: 64px;
+    flex-wrap: wrap;
+    border-radius: 18px;
+    padding: 10px;
+  }
+
+  .navRight {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .userChip {
+    max-width: 140px;
+  }
+
+  .footerTop {
+    grid-template-columns: 1fr;
+    border-radius: 18px;
+    padding: 16px;
+  }
+
+  .footerCols {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footerBottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 520px) {
+  .container {
+    width: min(1140px, 95vw);
+  }
+
+  .navWrap {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .brand {
+    font-size: 1.04rem;
+  }
+
+  .mainNav a {
+    font-size: 0.8rem;
+    padding: 7px 8px;
+  }
+
+  .btn {
+    min-height: 44px;
+    padding: 10px 13px;
+    font-size: 0.9rem;
+  }
+
+  .userChip {
+    display: none;
+  }
+
+  .siteFooter {
+    padding: 26px 0 18px;
+  }
+
+  .footerTop {
+    padding: 14px;
+  }
+
+  .footerCols {
+    grid-template-columns: 1fr;
   }
 }

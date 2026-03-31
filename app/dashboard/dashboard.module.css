@@ -1,0 +1,303 @@
+.dashboard {
+  padding: 40px 0 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.userCore {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  background: var(--void-800);
+  border: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blood-red);
+  box-shadow: var(--shadow-float);
+}
+
+.kicker {
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.header h1 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.statusVerified {
+  background: rgba(16, 229, 108, 0.1);
+  color: var(--life-green);
+  border-color: rgba(16, 229, 108, 0.3);
+}
+
+.statusPending {
+  background: color-mix(in oklab, var(--blood-red) 12%, transparent);
+  color: var(--blood-red);
+  border-color: color-mix(in oklab, var(--blood-red) 32%, transparent);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 32px;
+  align-items: start;
+}
+
+.mainCol, .sideCol {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.card {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.titleInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.titleInfo h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.availabilityCard {
+  border: 1px solid var(--glass-border);
+  background: linear-gradient(145deg, var(--void-800), var(--void-900));
+}
+
+.textActive { color: var(--life-green); font-weight: 600; font-size: 0.95rem; }
+.textInactive { color: var(--text-muted); font-weight: 600; font-size: 0.95rem; }
+
+.toggleBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid var(--glass-border);
+  font-weight: 700;
+  font-size: 1rem;
+  background: var(--void-700);
+  color: var(--text-primary);
+}
+
+.toggleBtn:hover {
+  background: var(--void-600);
+}
+
+.switchTrack {
+  width: 44px;
+  height: 24px;
+  border-radius: 100px;
+  background: var(--void-900);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.switchThumb {
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.btnActive .switchTrack { background: var(--life-green); }
+.btnActive .switchThumb { transform: translateX(20px); }
+
+.profileGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.infoField label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.infoField p, .contactRow {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.activityItem {
+  display: flex;
+  gap: 16px;
+}
+
+.activityMarker {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--blood-red);
+  margin-top: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 0 10px var(--blood-red);
+}
+
+.activityItem p {
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.activityItem span {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.logoutBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: var(--text-dim);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logoutBtn:hover {
+  background: color-mix(in oklab, var(--blood-red) 8%, transparent);
+  color: var(--blood-red);
+  border-color: color-mix(in oklab, var(--blood-red) 26%, transparent);
+}
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+  }
+
+  .card {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 980px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard {
+    padding: 24px 0 64px;
+    gap: 24px;
+  }
+
+  .userCore {
+    gap: 14px;
+  }
+
+  .avatar {
+    width: 62px;
+    height: 62px;
+    border-radius: 16px;
+  }
+
+  .header h1 {
+    font-size: 1.74rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 16px;
+    gap: 16px;
+  }
+
+  .toggleBtn {
+    padding: 12px;
+    font-size: 0.93rem;
+  }
+
+  .statusBadge {
+    font-size: 0.8rem;
+    padding: 7px 12px;
+  }
+
+  .profileGrid {
+    grid-template-columns: 1fr;
+  }
+}
