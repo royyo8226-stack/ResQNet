@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { LogIn, UserPlus, Shield, HeartHandshake } from "lucide-react";
 import { toast } from "sonner";
@@ -12,17 +12,17 @@ const signupInitial = { fullName: "", email: "", phoneNumber: "", password: "", 
 
 export default function SigninPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [mode, setMode] = useState("signin");
   const [loading, setLoading] = useState(false);
   const [signinForm, setSigninForm] = useState(signinInitial);
   const [signupForm, setSignupForm] = useState(signupInitial);
 
   useEffect(() => {
-    if (searchParams.get("mode") === "signup") {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("mode") === "signup") {
       setMode("signup");
     }
-  }, [searchParams]);
+  }, []);
 
   function onSigninChange(key, value) {
     setSigninForm((prev) => ({ ...prev, [key]: value }));
