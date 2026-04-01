@@ -2,20 +2,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import AppToaster from "@/components/AppToaster";
-import { Plus_Jakarta_Sans, Sora } from "next/font/google";
 import "./globals.css";
-
-const bodyFont = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-body",
-});
-
-const displayFont = Sora({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-display",
-});
 
 export const metadata = {
   title: "ResQNet",
@@ -24,7 +11,15 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${bodyFont.variable} ${displayFont.variable}`}>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap"
+        />
+      </head>
       <body>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <SiteHeader />

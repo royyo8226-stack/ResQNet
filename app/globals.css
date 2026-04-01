@@ -1,6 +1,8 @@
 @import "leaflet/dist/leaflet.css";
 
 :root {
+  --font-body: "Plus Jakarta Sans";
+  --font-display: "Sora";
   --font-space-grotesk: var(--font-display);
   --brand-red: #16a34a;
   --brand-green: #06b6d4;
