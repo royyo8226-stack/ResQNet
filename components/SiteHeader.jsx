@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function SiteHeader() {
   const router = useRouter();
-  const pathname = usePathname();
   const [user, setUser] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -45,10 +44,6 @@ export default function SiteHeader() {
       mounted = false;
     };
   }, []);
-
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
 
   useEffect(() => {
     if (!mobileOpen) {

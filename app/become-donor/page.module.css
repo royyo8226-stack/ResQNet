@@ -123,6 +123,29 @@
   padding-left: 40px !important;
 }
 
+.otpArea {
+  display: grid;
+  gap: 10px;
+}
+
+.otpVerifyRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.otpVerified {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--life-green);
+}
+
+.helperText {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
 .footer {
   display: flex;
   justify-content: space-between;
@@ -182,6 +205,15 @@
   .fieldGrid {
     grid-template-columns: 1fr;
   }
+
+  .otpVerifyRow {
+    grid-template-columns: 1fr;
+  }
+
+  .field[style] {
+    grid-column: span 1 !important;
+  }
+
   .header {
     flex-direction: column;
   }

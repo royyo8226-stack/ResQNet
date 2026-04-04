@@ -41,6 +41,11 @@ export async function GET(request) {
         ? { status: { $in: statusValues(status) } }
         : {};
 
+    query.$and = query.$and || [];
+    query.$and.push({
+      $or: [{ expiresAt: { $exists: false } }, { expiresAt: { $gt: new Date() } }],
+    });
+
     const donorsCollection = await getDonorsCollection();
     const donors = await donorsCollection.find(query).sort({ createdAt: -1 }).toArray();
 
@@ -62,6 +67,7 @@ export async function GET(request) {
       createdAt: donor.createdAt,
       verifiedAt: donor.verifiedAt || null,
       lastActiveAt: donor.lastActiveAt || donor.createdAt,
+      expiresAt: donor.expiresAt || null,
       location: {
         lat: donor.location?.coordinates?.[1] ?? null,
         lng: donor.location?.coordinates?.[0] ?? null,

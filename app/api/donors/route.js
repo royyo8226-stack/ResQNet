@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { getDonorsCollection } from "@/lib/mongodb";
 import { getDistanceKm } from "@/lib/utils";
+import {
+  OTP_PURPOSE_DONOR_REGISTRATION,
+  isValidEmail,
+  normalizeEmail,
+  verifyOtpVerificationToken,
+} from "@/lib/otp";
 
 const STATUS_ALIASES = {
   pending: ["pending", "Pending"],
@@ -89,6 +95,7 @@ function normalizeDonor(donor, userLat, userLng) {
     verifiedAt: donor.verifiedAt || null,
     createdAt: donor.createdAt,
     lastActiveAt: donor.lastActiveAt || donor.createdAt,
+    expiresAt: donor.expiresAt || null,
     location: { lat, lng },
     distanceKm,
   };
@@ -104,6 +111,19 @@ function parseQueryCoordinate(value) {
   }
 
   return Number(value);
+}
+
+function parseExpiryDate(value) {
+  if (!value) {
+    return null;
+  }
+
+  const expiryDate = new Date(value);
+  if (!Number.isFinite(expiryDate.getTime())) {
+    return null;
+  }
+
+  return expiryDate;
 }
 
 export async function GET(request) {
@@ -139,6 +159,11 @@ export async function GET(request) {
 
     if (verifiedOnly) query.status = statusQuery("verified");
     if (availableOnly) query.availableNow = true;
+
+    query.$and = query.$and || [];
+    query.$and.push({
+      $or: [{ expiresAt: { $exists: false } }, { expiresAt: { $gt: new Date() } }],
+    });
 
     const donorsCollection = await getDonorsCollection();
     const donors = await donorsCollection.find(query).toArray();
@@ -207,6 +232,7 @@ export async function POST(request) {
 
     const requiredFields = [
       "fullName",
+      "email",
       "phoneNumber",
       "whatsappNumber",
       "gender",
@@ -217,6 +243,8 @@ export async function POST(request) {
       "preferredContact",
       "latitude",
       "longitude",
+      "expiresAt",
+      "otpVerificationToken",
     ];
 
     for (const field of requiredFields) {
@@ -233,6 +261,31 @@ export async function POST(request) {
       return NextResponse.json({ message: "Please add resource details" }, { status: 400 });
     }
 
+    const email = normalizeEmail(body.email);
+    if (!isValidEmail(email)) {
+      return NextResponse.json({ message: "Invalid email" }, { status: 400 });
+    }
+
+    const otpVerificationToken = String(body.otpVerificationToken || "");
+    const otpVerified = verifyOtpVerificationToken({
+      token: otpVerificationToken,
+      email,
+      purpose: OTP_PURPOSE_DONOR_REGISTRATION,
+    });
+
+    if (!otpVerified) {
+      return NextResponse.json({ message: "Email OTP verification failed" }, { status: 403 });
+    }
+
+    const expiresAt = parseExpiryDate(body.expiresAt);
+    if (!expiresAt) {
+      return NextResponse.json({ message: "Invalid expiry date" }, { status: 400 });
+    }
+
+    if (expiresAt <= new Date()) {
+      return NextResponse.json({ message: "Expiry date must be in the future" }, { status: 400 });
+    }
+
     const latitude = Number(body.latitude);
     const longitude = Number(body.longitude);
 
@@ -246,7 +299,7 @@ export async function POST(request) {
       fullName: body.fullName,
       phoneNumber: body.phoneNumber,
       whatsappNumber: body.whatsappNumber,
-      email: body.email || "",
+      email,
       gender: body.gender,
       bloodGroup: isBloodResource ? body.bloodGroup : "",
       donorType: body.donorType,
@@ -259,6 +312,7 @@ export async function POST(request) {
       status: "pending",
       createdAt: new Date(),
       lastActiveAt: new Date(),
+      expiresAt,
       location: {
         type: "Point",
         coordinates: [longitude, latitude],

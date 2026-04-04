@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Activity, HeartPulse, LocateFixed, ShieldCheck, User } from "lucide-react";
+import { Activity, HeartPulse, LocateFixed, Mail, ShieldCheck, User } from "lucide-react";
 import { toast } from "sonner";
 import {
   BLOOD_DONOR_TYPES,
@@ -13,8 +13,15 @@ import {
 } from "@/lib/constants";
 import styles from "./page.module.css";
 
+function defaultExpiryLocalValue() {
+  const expiryDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const localDate = new Date(expiryDate.getTime() - expiryDate.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 16);
+}
+
 const initialForm = {
   fullName: "",
+  email: "",
   phoneNumber: "",
   whatsappNumber: "",
   gender: GENDERS[0],
@@ -28,13 +35,15 @@ const initialForm = {
   longitude: "",
   availableNow: true,
   preferredContact: "Call",
+  expiresAt: defaultExpiryLocalValue(),
+  otpVerificationToken: "",
 };
 
 const stepTitles = [
   "Personal Profile",
   "Resource Details",
   "Location Setup",
-  "Availability Control",
+  "Availability & Expiry",
   "Final Review",
 ];
 
@@ -49,23 +58,48 @@ export default function BecomeDonorPage() {
   const [donorId, setDonorId] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
   const isBloodResource = form.resourceType === "Blood";
+
+  const minimumExpiry = useMemo(() => {
+    const now = new Date();
+    const localNow = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    return localNow.toISOString().slice(0, 16);
+  }, []);
+
+  const emailValid = useMemo(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email), [form.email]);
 
   const donorTypeOptions = useMemo(() => getDonorTypeOptions(form.resourceType), [form.resourceType]);
 
   const canContinue = useMemo(() => {
-    if (step === 0) return form.fullName && form.phoneNumber && form.whatsappNumber && form.gender;
+    if (step === 0) {
+      return form.fullName && form.phoneNumber && form.whatsappNumber && form.gender && emailValid && otpVerified;
+    }
     if (step === 1) {
       if (isBloodResource) return form.resourceType && form.bloodGroup && form.donorType;
       return form.resourceType && form.donorType && form.resourceNotes.trim().length >= 5;
     }
     if (step === 2) return form.address && form.pincode && form.latitude && form.longitude;
-    if (step === 3) return form.preferredContact;
+    if (step === 3) return form.preferredContact && form.expiresAt;
     return true;
-  }, [form, isBloodResource, step]);
+  }, [emailValid, form, isBloodResource, otpVerified, step]);
 
   function updateForm(key, value) {
-    setForm((prev) => ({ ...prev, [key]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [key]: value,
+      ...(key === "email" ? { otpVerificationToken: "" } : {}),
+    }));
+
+    if (key === "email") {
+      setOtpSent(false);
+      setOtpVerified(false);
+      setOtpCode("");
+    }
   }
 
   function updateResourceType(resourceType) {
@@ -89,6 +123,7 @@ export default function BecomeDonorPage() {
           setForm((prev) => ({
             ...prev,
             fullName: prev.fullName || data.user.fullName || "",
+            email: prev.email || data.user.email || "",
             phoneNumber: prev.phoneNumber || data.user.phoneNumber || "",
             whatsappNumber: prev.whatsappNumber || data.user.phoneNumber || "",
           }));
@@ -124,6 +159,67 @@ export default function BecomeDonorPage() {
     );
   }
 
+  async function sendOtp() {
+    if (!emailValid) {
+      toast.error("Please enter a valid email first.");
+      return;
+    }
+
+    setSendingOtp(true);
+    setOtpVerified(false);
+    setOtpCode("");
+
+    try {
+      const response = await fetch("/api/donors/otp/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to send OTP");
+
+      setOtpSent(true);
+      setForm((prev) => ({ ...prev, otpVerificationToken: "" }));
+      toast.success(`OTP sent to ${form.email}. Expires in ${data.expiresInMinutes || 10} minutes.`);
+    } catch (error) {
+      toast.error(error.message || "Failed to send OTP");
+      setOtpSent(false);
+    } finally {
+      setSendingOtp(false);
+    }
+  }
+
+  async function verifyOtp() {
+    if (!/^\d{6}$/.test(otpCode)) {
+      toast.error("Enter the 6-digit OTP sent to your email.");
+      return;
+    }
+
+    setVerifyingOtp(true);
+
+    try {
+      const response = await fetch("/api/donors/otp/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email, otpCode }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "OTP verification failed");
+
+      setOtpVerified(true);
+      setForm((prev) => ({ ...prev, otpVerificationToken: data.otpVerificationToken }));
+      toast.success("Email verified successfully.");
+    } catch (error) {
+      setOtpVerified(false);
+      setForm((prev) => ({ ...prev, otpVerificationToken: "" }));
+      toast.error(error.message || "OTP verification failed");
+    } finally {
+      setVerifyingOtp(false);
+    }
+  }
+
   async function submitRegistration() {
     if (!signedIn) {
       toast.error("Please sign in before registering.");
@@ -138,8 +234,10 @@ export default function BecomeDonorPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          email: String(form.email || "").trim().toLowerCase(),
           latitude: Number(form.latitude),
           longitude: Number(form.longitude),
+          expiresAt: new Date(form.expiresAt).toISOString(),
         }),
       });
 
@@ -205,6 +303,32 @@ export default function BecomeDonorPage() {
               <div className={styles.field}>
                 <label>WhatsApp Number</label>
                 <input className="input" placeholder="+91 00000 00000" value={form.whatsappNumber} onChange={(e) => updateForm("whatsappNumber", e.target.value)} />
+              </div>
+              <div className={styles.field} style={{ gridColumn: "span 2" }}>
+                <label>Email (OTP verification required)</label>
+                <div className={styles.inputWrap}><Mail size={18} /><input className="input" type="email" placeholder="you@example.com" value={form.email} onChange={(e) => updateForm("email", e.target.value)} /></div>
+              </div>
+              <div className={styles.otpArea} style={{ gridColumn: "span 2" }}>
+                <button type="button" className="btn btnGhost" onClick={sendOtp} disabled={!emailValid || sendingOtp}>
+                  {sendingOtp ? "Sending OTP..." : otpSent ? "Resend OTP" : "Send OTP"}
+                </button>
+
+                {otpSent ? (
+                  <div className={styles.otpVerifyRow}>
+                    <input
+                      className="input"
+                      placeholder="Enter 6-digit OTP"
+                      maxLength={6}
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+                    />
+                    <button type="button" className="btn btnPrimary" onClick={verifyOtp} disabled={verifyingOtp || otpVerified}>
+                      {otpVerified ? "Verified" : verifyingOtp ? "Verifying..." : "Verify OTP"}
+                    </button>
+                  </div>
+                ) : null}
+
+                {otpVerified ? <p className={styles.otpVerified}>Email verified successfully.</p> : null}
               </div>
             </div>
           )}
@@ -283,6 +407,17 @@ export default function BecomeDonorPage() {
                     <option value="WhatsApp">WhatsApp Message</option>
                   </select>
                </div>
+               <div className={styles.field} style={{ gridColumn: "span 2" }}>
+                  <label>Registration Expiry Date</label>
+                  <input
+                    className="input"
+                    type="datetime-local"
+                    min={minimumExpiry}
+                    value={form.expiresAt}
+                    onChange={(e) => updateForm("expiresAt", e.target.value)}
+                  />
+                  <p className={styles.helperText}>Your listing is automatically deleted after this date.</p>
+               </div>
             </div>
           )}
 
@@ -291,6 +426,7 @@ export default function BecomeDonorPage() {
               <div className={styles.confIcon}><ShieldCheck size={48} color="var(--life-green)" /></div>
               <h3>{isBloodResource ? "Donor Registration Complete" : "Provider Registration Complete"}</h3>
               <p>Your profile is submitted for admin verification.</p>
+              <p className={styles.helperText}>Listing expiry: {new Date(form.expiresAt).toLocaleString()}</p>
               {donorId && <div className={styles.refId}>Reference ID: {donorId}</div>}
             </div>
           )}
